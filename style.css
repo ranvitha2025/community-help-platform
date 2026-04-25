@@ -1,0 +1,97 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #eef2f3;
+}
+
+header {
+    background: #1f3c88;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+nav a {
+    color: white;
+    margin: 10px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.container {
+    padding: 20px;
+    text-align: center;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    margin: 15px auto;
+    width: 80%;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+button {
+    padding: 10px 15px;
+    background: #1f3c88;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+body {
+  font-family: Arial;
+  background: #f4f4f4;
+}
+
+.container input,
+.container button {
+  margin: 5px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#stepInput {
+  width: 300px;   /* increase this value as needed */
+  padding: 10px;
+  font-size: 16px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background: white;
+  margin: 10px 0;
+  padding: 15px;
+  border-left: 6px solid orange;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.completed {
+  border-left: 6px solid green;
+  text-decoration: line-through;
+}
+    img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-left: 10px;
+  border-radius: 8px;
+}
+
+li {
+  flex-direction: column;
+  align-items: flex-start;
+}

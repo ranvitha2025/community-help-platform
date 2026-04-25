@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Assignment</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="nav.js"></script>
+  <script src="api.js"></script>
+  <script src="translate.js"></script>
+  
+  
+</head>
+<body>
+
+  <div class="container">
+    <div class="card">
+      <div id="google_translate_element"></div>
+
+<script src="translate.js"></script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<!-- FORM -->
+      <h3>Assign Volunteer to Problem</h3>
+
+      <label>Select Problem:</label><br>
+      <select id="report-select" style="width:100%; padding:8px; margin-bottom:15px;">
+        <option value="">-- Select Problem --</option>
+      </select>
+
+      <label>Select Volunteer:</label><br>
+      <select id="volunteer-select" style="width:100%; padding:8px; margin-bottom:15px;">
+        <option value="">-- Select Volunteer --</option>
+      </select>
+
+      <button onclick="assignVolunteer()">Assign</button>
+      <p id="assign-msg" style="color:green; margin-top:10px;"></p>
+    </div>
+
+    <!-- Shows current assignments -->
+    <div class="card">
+      <h3>Current Assignments</h3>
+      <div id="assignment-list"></div>
+    </div>
+  </div>
+
+  <script>
+  let volunteers = [];
+  let pending = [];
+
+  async function loadData() {
+    const volRes = await fetch('http://localhost:3000/api/volunteers');
+    const allVolunteers = await volRes.json();
+    volunteers= allVolunteers.filter(v=> v.available !== false);
+
+    const repRes = await fetch('http://localhost:3000/api/reports');
+    const reports = await repRes.json();
+    pending = reports.filter(r => r.status !== 'completed');
+
+    // Load problems dropdown
+    const reportSelect = document.getElementById('report-select');
+    reportSelect.innerHTML = '<option value="">-- Select Problem --</option>';
+    pending.forEach(r => {
+      reportSelect.innerHTML += 
+        `<option value="${r.title}">${r.title} — ${r.area}</option>`;
+    });
+
+    // Load volunteers dropdown
+    const volSelect = document.getElementById('volunteer-select');
+    volSelect.innerHTML = '<option value="">-- Select Volunteer --</option>';
+    volunteers.forEach((v, i) => {
+      volSelect.innerHTML += 
+        `<option value="${i}">${v.name} — ${v.skill} (${v.area})</option>`;
+    });
+
+    loadAssignments();
+  }
+
+  async function assignVolunteer() {
+    const volIndex = document.getElementById('volunteer-select').value;
+    const problemTitle = document.getElementById('report-select').value;
+
+    if (volIndex === '' || problemTitle === '') {
+      alert('Please select both a problem and a volunteer!');
+      return;
+    }
+
+    const v = volunteers[volIndex];
+
+    const response = await fetch('http://localhost:3000/api/assign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        problemTitle,
+        volunteerName: v.name
+      })
+    });
+
+    const result = await response.json();
+    document.getElementById('assign-msg').textContent = '✅ ' + result.message;
+    loadData();
+  }
+
+  async function loadAssignments() {
+    const response = await fetch('http://localhost:3000/api/reports');
+    const reports = await response.json();
+    const assigned = reports.filter(r => r.assignedTo && r.status !== 'completed');
+
+    const container = document.getElementById('assignment-list');
+
+    if (assigned.length === 0) {
+      container.innerHTML = '<p>No assignments yet.</p>';
+      return;
+    }
+
+    container.innerHTML = '';
+    assigned.forEach(r => {
+      container.innerHTML += `
+        <div style="border-bottom:1px solid #ccc; padding:8px 0;">
+          🔴 <b>${r.title}</b><br>
+          👷 Assigned to: <b>${r.assignedTo}</b>
+        </div>`;
+    });
+  }
+
+  loadData();
+</script>
+
+</body>
+</html>

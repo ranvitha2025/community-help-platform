@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Our Society</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="nav.js"></script>
+ <script src="api.js"></script>
+  <script src="translate.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    <div class="card" style="text-align:center; padding:40px;">
+      <div id="google_translate_element"></div>
+
+<script src="translate.js"></script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<!-- FORM -->
+
+      <img src="logo.png" width="120"><br><br>
+
+      <h2>Welcome to Our Community</h2>
+      <p>This platform connects people and volunteers to solve local problems efficiently.</p>
+
+      <br>
+      <a href="report.html">
+        <button style="margin:10px; padding:10px 25px;">Report a Problem</button>
+      </a>
+      <a href="Dashboard.html">
+        <button style="margin:10px; padding:10px 25px;">Register as Volunteer</button>
+      </a>
+
+    </div>
+
+    <!-- Live stats -->
+    <div style="display:flex; gap:15px; margin-top:20px;">
+      <div class="card" style="flex:1; text-align:center;">
+        <h3 id="stat-volunteers">0</h3>
+        <p>Volunteers Registered</p>
+      </div>
+      <div class="card" style="flex:1; text-align:center;">
+        <h3 id="stat-reports">0</h3>
+        <p>Problems Reported</p>
+      </div>
+      <div class="card" style="flex:1; text-align:center;">
+        <h3 id="stat-completed">0</h3>
+        <p>Problems Solved</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+  async function loadStats() {
+    const volRes = await fetch('http://localhost:3000/api/volunteers');
+    const volunteers = await volRes.json();
+
+    const repRes = await fetch('http://localhost:3000/api/reports');
+    const reports = await repRes.json();
+
+    const completed = reports.filter(r => r.status === 'completed');
+
+    document.getElementById('stat-volunteers').textContent = volunteers.length;
+    document.getElementById('stat-reports').textContent = reports.length;
+    document.getElementById('stat-completed').textContent = completed.length;
+  }
+
+  loadStats();
+</script>
+
+</body>
+</html>

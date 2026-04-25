@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Volunteers</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="nav.js"></script>
+<script src="api.js"></script>
+  <script src="translate.js"></script>
+  
+</head>
+<body>
+
+  <header><h1>Available Volunteers</h1></header>
+
+  <div class="container">
+    <div class="card">
+      <div id="google_translate_element"></div>
+
+<script src="translate.js"></script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<!-- FORM -->
+      <h3 id="area-title">Volunteers near you</h3>
+      <div id="volunteer-list"></div>
+    </div>
+  </div>
+
+  <script>
+  async function loadVolunteers() {
+    const area = localStorage.getItem('userArea') || '';
+    const container = document.getElementById('volunteer-list');
+    const title = document.getElementById('area-title');
+
+    if (!area) {
+      title.textContent = 'No area found';
+      container.innerHTML = '<p>Please submit a report first.</p>';
+      return;
+    }
+
+    const response = await fetch('http://localhost:3000/api/volunteers');
+    const all = await response.json();
+    const matching = all.filter(v => v.area === area);
+
+    title.textContent = 'Volunteers in ' + area;
+
+    if (matching.length === 0) {
+      container.innerHTML = `<p>No volunteers in <b>${area}</b> yet.</p>`;
+    } else {
+      matching.forEach(v => {
+        container.innerHTML += `
+          <div style="border-bottom:1px solid #ccc; padding:10px 0;">
+            <b>${v.name}</b> — ${v.skill}<br>
+            📞 ${v.phone}<br>
+            📍 ${v.area}
+          </div>`;
+      });
+    }
+  }
+
+  loadVolunteers();
+</script>
+
+</body>
+</html>

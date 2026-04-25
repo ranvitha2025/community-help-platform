@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Report Problem</title>
+<link rel="stylesheet" href="style.css">
+<script src="nav.js"></script>
+<script src="api.js"></script>
+  <script src="translate.js"></script>
+  
+<script>
+  async function submitIssue() {
+  const title = document.getElementById('prob-title').value.trim();
+  const desc  = document.getElementById('prob-desc').value.trim();
+  const area  = document.getElementById('user-area').value.trim().toLowerCase();
+
+  if (!title || !desc || !area) {
+    alert('Please fill all fields!');
+    return;
+  }
+
+  // Save to localStorage so volunteers.html knows user area
+  localStorage.setItem('userArea', area);
+
+  // Save to backend
+  const response = await fetch('http://localhost:3000/api/reports', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, desc, area })
+  });
+
+  document.getElementById('formSection').style.display = 'none';
+  document.getElementById('message').style.display = 'block';
+}
+</script>
+</head>
+<body>
+<header><h1>Report Issue</h1></header>
+<div class="container">
+  <div id="google_translate_element"></div>
+
+<script src="translate.js"></script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<!-- FORM -->
+<!-- FORM -->
+<div class="card" id="formSection">
+<input type="text" id="prob-title" placeholder="Problem Title"><br><br>
+<textarea  id="prob-desc" placeholder="Description"></textarea><br><br>
+<input type="text" id="user-area" placeholder="Location(e.g. kengeri)"><br><br>
+<input type="file"><br><br>
+<button onclick="submitIssue()">Submit</button>
+</div>
+<!-- SUCCESS MESSAGE -->
+<div class="card" id="message" style="display:none;">
+    <h2>✅ Your issue has been submitted!</h2>
+    <p>We are searching for a volunteer to assign this work.</p>
+</div>
+
+</div>
+
+</body>
+</html>

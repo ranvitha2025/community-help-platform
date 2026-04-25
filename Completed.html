@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Completed</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="nav.js"></script>
+  <script src="translate.js"></script>
+  <script src="api.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    <div id="google_translate_element"></div>
+
+<script src="translate.js"></script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- PENDING PROBLEMS — admin marks these as done -->
+    <div class="card">
+      <h3>Pending Problems</h3>
+      <div id="pending-list"></div>
+    </div>
+
+    <!-- COMPLETED PROBLEMS — shows finished ones -->
+    <div class="card">
+      <h3>Completed Problems</h3>
+      <div id="completed-list"></div>
+    </div>
+     
+  </div>
+
+  <script>
+  async function loadAll() {
+    await loadPending();
+    await loadCompleted();
+  }
+
+  async function loadPending() {
+    const reportsRes = await fetch('http://localhost:3000/api/reports');
+    const reports = await reportsRes.json();
+    const pending = reports.filter(r => r.status !== 'completed');
+
+    const container = document.getElementById('pending-list');
+
+    if (pending.length === 0) {
+      container.innerHTML = '<p>No pending problems 🎉</p>';
+      return;
+    }
+
+    container.innerHTML = '';
+    pending.forEach((r, i) => {
+      container.innerHTML += `
+        <div style="border-bottom:1px solid #ccc; padding:10px 0;">
+          <b>🔴 ${r.title}</b><br>
+          📍 Area: ${r.area}<br>
+          📝 ${r.desc}<br>
+          👷 Volunteer: <b>${r.assignedTo || 'Not assigned yet'}</b><br><br>
+          <input type="file" id="img-${i}" accept="image/*">
+          <button onclick="markDone('${r.title}', ${i})">
+            ✅ Mark as Completed
+          </button>
+        </div>`;
+    });
+  }
+
+  async function markDone(title, index) {
+    await fetch('http://localhost:3000/api/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ problemTitle: title })
+    });
+
+    alert('✅ ' + title + ' marked as completed!');
+    loadAll();
+  }
+
+  async function loadCompleted() {
+    const response = await fetch('http://localhost:3000/api/reports');
+    const reports = await response.json();
+    const completed = reports.filter(r => r.status === 'completed');
+
+    const container = document.getElementById('completed-list');
+
+    if (completed.length === 0) {
+      container.innerHTML = '<p>No completed works yet.</p>';
+      return;
+    }
+
+    container.innerHTML = '';
+    completed.forEach(item => {
+      container.innerHTML += `
+        <div style="border-bottom:1px solid #ccc; padding:10px 0;">
+          <b>✅ ${item.title}</b><br>
+          📍 ${item.area}<br>
+          👷 Volunteer: <b>${item.assignedTo || 'Not recorded'}</b><br>
+          🕒 ${item.date}
+        </div>`;
+    });
+  }
+
+  loadAll();
+</script>
+
+</body>
+</html>

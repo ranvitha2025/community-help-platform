@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Help</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="nav.js"></script>
+  <script src="api.js"></script>
+  <script src="translate.js"></script>
+  
+</head>
+<body>
+
+  <div class="container">
+    <div id="google_translate_element"></div>
+
+<script src="translate.js"></script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<!-- FORM -->
+
+    <!-- About section -->
+    <div class="card">
+      <h3>About</h3>
+      <p>This platform helps society members solve problems together.</p>
+    </div>
+
+    <!-- Support / Contact -->
+    <div class="card">
+      <h3>Support</h3>
+      <p>Email: support@society.com</p>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card">
+      <h3>How to use this platform?</h3>
+      <p><b>Step 1:</b> Go to <b>Report</b> page and describe your problem with your area.</p>
+      <p><b>Step 2:</b> Go to <b>Volunteers</b> page to see who can help near you.</p>
+      <p><b>Step 3:</b> Track your issue on the <b>Tracking</b> page.</p>
+      <p><b>Step 4:</b> Once resolved, it appears on <b>Completed</b> page.</p>
+    </div>
+
+    <!-- User query form -->
+    <div class="card">
+      <h3>Ask a Question</h3>
+      <input type="text" id="help-name" placeholder="Your Name"><br><br>
+      <input type="text" id="help-email" placeholder="Your Email"><br><br>
+      <textarea id="help-query" placeholder="Type your question here..."></textarea><br><br>
+      <button onclick="submitQuery()">Send</button>
+      <p id="help-msg" style="color:green;"></p>
+    </div>
+
+    <!-- Show submitted queries -->
+    <div class="card">
+      <h3>Your Previous Queries</h3>
+      <div id="query-list"></div>
+    </div>
+
+  </div>
+
+  <script>
+    function submitQuery() {
+      const name  = document.getElementById('help-name').value.trim();
+      const email = document.getElementById('help-email').value.trim();
+      const query = document.getElementById('help-query').value.trim();
+
+      if (!name || !query) {
+        alert('Please enter your name and question!');
+        return;
+      }
+
+      const queries = JSON.parse(localStorage.getItem('helpQueries') || '[]');
+      queries.push({
+        name, email, query,
+        date: new Date().toLocaleDateString()
+      });
+      localStorage.setItem('helpQueries', JSON.stringify(queries));
+
+      document.getElementById('help-msg').textContent = '✅ Query submitted! We will get back to you.';
+      document.getElementById('help-name').value = '';
+      document.getElementById('help-email').value = '';
+      document.getElementById('help-query').value = '';
+
+      loadQueries();
+    }
+
+    function loadQueries() {
+      const queries = JSON.parse(localStorage.getItem('helpQueries') || '[]');
+      const container = document.getElementById('query-list');
+
+      if (queries.length === 0) {
+        container.innerHTML = '<p>No queries submitted yet.</p>';
+        return;
+      }
+
+      container.innerHTML = '';
+      queries.forEach(q => {
+        container.innerHTML += `
+          <div style="border-bottom:1px solid #ccc; padding:10px 0;">
+            <b>${q.name}</b> — ${q.date}<br>
+            📧 ${q.email}<br>
+            💬 ${q.query}
+          </div>`;
+      });
+    }
+
+    loadQueries();
+  </script>
+
+</body>
+</html>

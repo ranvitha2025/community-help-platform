@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="nav.js"></script>
+   <script src="api.js"></script>
+  <script src="translate.js"></script>
+  
+</head>
+
+<body>
+  <ul id="problemList"></ul>
+
+<header>
+    <h1>Volunteer Dashboard</h1>
+</header>
+
+<div class="container">
+<div id="google_translate_element"></div>
+
+<script src="translate.js"></script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<!-- FORM -->
+<div class="card">
+<h3>Register as Volunteer</h3>
+<input type="text" id="vol-name" placeholder="Name"><br><br>
+<input type="text" id="vol-skill"  placeholder="Skill"><br><br>
+<input type="text" id="vol-number" placeholder="number"><br><br>
+<input type="text" id="vol-area" placeholder="area(e.g. kengeri)"><br><br>
+<button onclick="registerVolunteer()">Register</button>
+</div>
+
+<div class="card">
+<h3>Total Volunteers</h3>
+<p id="vol-count">0 Volunteers Available</p>
+</div>
+
+</div>
+<script>
+  async function registerVolunteer() {
+    const name  = document.getElementById('vol-name').value.trim();
+    const skill = document.getElementById('vol-skill').value.trim();
+    const phone = document.getElementById('vol-number').value.trim();
+    const area  = document.getElementById('vol-area').value.trim().toLowerCase();
+
+    if (!name || !skill || !phone || !area) {
+      alert('Please fill all fields!');
+      return;
+    }
+
+    const result=await registerVolunteer(name,skill,phone,area);
+    alert(result.message);
+
+    document.getElementById('vol-name').value = '';
+    document.getElementById('vol-skill').value = '';
+    document.getElementById('vol-number').value = '';
+    document.getElementById('vol-area').value = '';
+
+    updateCount();
+  }
+
+  async function updateCount() {
+    const response = await fetch('http://localhost:3000/api/volunteers');
+    const volunteers = await response.json();
+    document.getElementById('vol-count').textContent =
+      volunteers.length + ' Volunteers Available';
+  }
+
+  updateCount();
+</script>
+</body>
+</html>
